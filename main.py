@@ -15,6 +15,8 @@ import selectors
 import signal
 import subprocess
 import base64
+import uuid
+import os
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -38,10 +40,10 @@ def lambda_handler(event, context):
     # parameters by simulating that we're calling it from the command-line
 
 
-    #TODO: RANDOMISE FILENAME!
+    tmp_file_name = uuid.uuid4()
     args = [
         *(["--no-upload"]),
-        *(["--filename", "/tmp/out.pdf"]),
+        *(["--filename", f"/tmp/{tmp_file_name}.pdf"]),
         *(["--verbose"]),
         *(["--blank"] if payload.get("blank", False) else []),
         *(["--center"] if payload.get("center", False) else []),
@@ -86,10 +88,11 @@ def lambda_handler(event, context):
         raise Exception()
     
     #there is be a bug in p2r. The output file is named "foo_.pdf" instead of "foo.pdf"
-    with open("/tmp/out_.pdf" , "rb") as f:
+    tmp_file_path = f"/tmp/{tmp_file_name}_.pdf" 
+    with open( tmp_file_path, "rb") as f:
         b = base64.b64encode(f.read()).decode("utf-8")
 
-    return {
+    response = {
         "statusCode": 200,
         "headers": {
             'Content-type' : 'application/pdf'
@@ -97,3 +100,6 @@ def lambda_handler(event, context):
         "body": b,
         "isBase64Encoded": True
     }
+    os.remove(tmp_file_path)
+
+    return response
