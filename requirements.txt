@@ -1,2 +1,4 @@
-paper2remarkable==v0.8.2
+#lock to old version to avoid requiring newer libapango 1.44 not available on Amazon Linux 2
+weasyprint==52.5
+paper2remarkable==v0.9.11
 readabilipy==v0.2.0
