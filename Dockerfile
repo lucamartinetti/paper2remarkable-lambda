@@ -1,9 +1,9 @@
-FROM amazon/aws-lambda-python:3.8 as base
+FROM amazon/aws-lambda-python:3.9 as base
 
 FROM base AS rmapi
 RUN yum update -y
 RUN yum install -y golang
-RUN GO111MODULE=on go get github.com/juruen/rmapi@e879a9b
+RUN GO111MODULE=on go get github.com/juruen/rmapi@latest
 
 FROM base as final
 COPY --from=rmapi /root/go/bin/rmapi /usr/bin/rmapi
